@@ -53,11 +53,13 @@ client = gspread.authorize(creds)
 
 # シート名: "zorori_read_status"
 sheet = client.open("zorori_read_status").sheet1
-values = sheet.col_values(1)
-if values:
-    st.session_state.read_status = [v == "TRUE" for v in values]
-else:
-    st.session_state.read_status = [False] * len(books)
+# Google Sheets から読了データを読み込む（初回のみ）
+if "read_status" not in st.session_state:
+    values = sheet.col_values(1)
+    if values:
+        st.session_state.read_status = [v == "TRUE" for v in values]
+    else:
+        st.session_state.read_status = [False] * len(books)
 
 updated_read_status = []
 for i, title in enumerate(books):
