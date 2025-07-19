@@ -55,19 +55,11 @@ if values:
 else:
     st.session_state.read_status = [False] * len(books)
 
-updated_read_status = []
-for i, title in enumerate(books):
-    checked = st.checkbox(f"{i+1}巻: {title}", value=st.session_state.read_status[i], key=f"book_{i}")
-    updated_read_status.append(checked)
-st.session_state.read_status = updated_read_status
-
 # 読書進捗を集計
 read_count = sum(st.session_state.read_status)
 unread_count = len(books) - read_count
 
-st.subheader(f"✅ {len(books)}冊中 {read_count}冊 読了！")
-
-# ドーナツグラフの描画
+# ドーナツグラフの描画（タイトルの直後に表示）
 fig, ax = plt.subplots()
 colors = ['#87cefa', '#dcdcdc']  # 青 / 灰
 ax.pie(
@@ -79,6 +71,14 @@ ax.pie(
 )
 ax.axis("equal")  # 円形にする
 st.pyplot(fig)
+
+st.subheader(f"✅ {len(books)}冊中 {read_count}冊 読了！")
+
+updated_read_status = []
+for i, title in enumerate(books):
+    checked = st.checkbox(f"{i+1}巻: {title}", value=st.session_state.read_status[i], key=f"book_{i}")
+    updated_read_status.append(checked)
+st.session_state.read_status = updated_read_status
 
 # Google Sheets へ保存
 sheet.update('A1:A{}'.format(len(books)), [[str(v)] for v in st.session_state.read_status])
