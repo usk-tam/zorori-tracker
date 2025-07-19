@@ -67,13 +67,18 @@ if "read_status" not in st.session_state:
         st.session_state.read_status = st.session_state.read_status[:len(books)]
 
 updated_read_status = []
+has_changed = False
+
 for i, title in enumerate(books):
     checked = st.checkbox(f"{i+1}巻: {title}", value=st.session_state.read_status[i], key=f"book_{i}")
     updated_read_status.append(checked)
-st.session_state.read_status = updated_read_status
+    if checked != st.session_state.read_status[i]:
+        has_changed = True
 
-# Google Sheets へ保存
-sheet.update('A1:A{}'.format(len(books)), [[str(v)] for v in st.session_state.read_status])
+# チェックが変更されたときのみ状態を保存
+if has_changed:
+    st.session_state.read_status = updated_read_status
+    sheet.update('A1:A{}'.format(len(books)), [[str(v)] for v in st.session_state.read_status])
 
 # 読了冊数とグラフを即時反映
 read_count = sum(st.session_state.read_status)
