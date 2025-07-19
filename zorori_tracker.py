@@ -56,7 +56,7 @@ ax.pie(
     [read_count, unread_count],
     labels=["Read", "Unread"],
     colors=colors,
-    startangle=-90,
+    startangle=90,
     wedgeprops=dict(width=0.4)  # ドーナツにする
 )
 ax.axis("equal")  # 円形にする
