@@ -1,5 +1,9 @@
+import os
+import json
 import streamlit as st
 import matplotlib.pyplot as plt
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 plt.rcParams['font.family'] = 'sans-serif'
 
 # --- ゾロリ書籍リスト ---
@@ -38,18 +42,32 @@ books = [
 st.set_page_config(page_title="ゾロリ読書記録", layout="centered")
 st.title("📚 かいけつゾロリ 読書メーター")
 
-# 状態保存（読了チェック）
-if "read_status" not in st.session_state:
+# Google Sheets から読了データを読み込む
+scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+creds = ServiceAccountCredentials.from_json_keyfile_dict(st.secrets["gspread"], scope)
+client = gspread.authorize(creds)
+
+# シート名: "zorori_read_status"
+sheet = client.open("zorori_read_status").sheet1
+values = sheet.col_values(1)
+if values:
+    st.session_state.read_status = [v == "TRUE" for v in values]
+else:
     st.session_state.read_status = [False] * len(books)
+
+updated_read_status = []
+for i, title in enumerate(books):
+    checked = st.checkbox(f"{i+1}巻: {title}", value=st.session_state.read_status[i], key=f"book_{i}")
+    updated_read_status.append(checked)
+st.session_state.read_status = updated_read_status
 
 # 読書進捗を集計
 read_count = sum(st.session_state.read_status)
 unread_count = len(books) - read_count
-rate = read_count / len(books)
 
 st.subheader(f"✅ {len(books)}冊中 {read_count}冊 読了！")
 
-# --- ドーナツグラフの描画 ---
+# ドーナツグラフの描画
 fig, ax = plt.subplots()
 colors = ['#87cefa', '#dcdcdc']  # 青 / 灰
 ax.pie(
@@ -62,9 +80,5 @@ ax.pie(
 ax.axis("equal")  # 円形にする
 st.pyplot(fig)
 
-# --- チェックリストの表示 ---
-for i, title in enumerate(books):
-    st.session_state.read_status[i] = st.checkbox(
-        f"{i+1}巻: {title}",
-        value=st.session_state.read_status[i]
-    )
+# Google Sheets へ保存
+sheet.update('A1:A{}'.format(len(books)), [[str(v)] for v in st.session_state.read_status])
