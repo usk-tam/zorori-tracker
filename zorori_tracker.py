@@ -77,8 +77,8 @@ for i, title in enumerate(books):
 
 # チェックが変更されたときのみ状態を保存
 if has_changed:
+    sheet.update('A1:A{}'.format(len(books)), [[str(v)] for v in updated_read_status])
     st.session_state.read_status = updated_read_status
-    sheet.update('A1:A{}'.format(len(books)), [[str(v)] for v in st.session_state.read_status])
 
 # 読了冊数とグラフを即時反映
 read_count = sum(st.session_state.read_status)
