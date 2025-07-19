@@ -54,9 +54,9 @@ fig, ax = plt.subplots()
 colors = ['#87cefa', '#dcdcdc']  # 青 / 灰
 ax.pie(
     [read_count, unread_count],
-    labels=["読んだ", "未読"],
+    labels=["Read", "Unread"],
     colors=colors,
-    startangle=90,
+    startangle=-90,
     wedgeprops=dict(width=0.4)  # ドーナツにする
 )
 ax.axis("equal")  # 円形にする
