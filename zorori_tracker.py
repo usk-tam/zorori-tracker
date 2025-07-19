@@ -1,5 +1,6 @@
 import streamlit as st
 import matplotlib.pyplot as plt
+matplotlib.rcParams['font.family'] = 'IPAexGothic'
 
 # --- ゾロリ書籍リスト ---
 books = [
