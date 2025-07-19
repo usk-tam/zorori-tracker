@@ -39,7 +39,7 @@ books = [
     "かいけつゾロリいただき!! なぞのどデカダイアモンド"
 ]
 
-st.set_page_config(page_title="ゾロリ読書メーター", layout="centered")
+st.set_page_config(page_title="ゾロリ読書記録", layout="centered")
 st.title("📚 かいけつゾロリ 読書メーター")
 
 # グラフ描画用のプレースホルダーを作成
@@ -60,6 +60,11 @@ if "read_status" not in st.session_state:
         st.session_state.read_status = [v == "TRUE" for v in values]
     else:
         st.session_state.read_status = [False] * len(books)
+    # Google Sheets の行数が books の長さと一致していない場合、Falseで埋める
+    if len(st.session_state.read_status) < len(books):
+        st.session_state.read_status += [False] * (len(books) - len(st.session_state.read_status))
+    elif len(st.session_state.read_status) > len(books):
+        st.session_state.read_status = st.session_state.read_status[:len(books)]
 
 updated_read_status = []
 for i, title in enumerate(books):
@@ -86,4 +91,4 @@ ax.pie(
 ax.axis("equal")
 
 graph_placeholder.pyplot(fig)
-count_placeholder.subheader(f"✅ {len(books)}冊中 {read_count}冊 読んだよ！")
+count_placeholder.subheader(f"✅ {len(books)}冊中 {read_count}冊 読了！")
