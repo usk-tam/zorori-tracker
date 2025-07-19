@@ -53,18 +53,14 @@ client = gspread.authorize(creds)
 
 # シート名: "zorori_read_status"
 sheet = client.open("zorori_read_status").sheet1
-# Google Sheets から読了データを読み込む（初回のみ）
-if "read_status" not in st.session_state:
-    values = sheet.col_values(1)
-    if values:
-        st.session_state.read_status = [v == "TRUE" for v in values]
-    else:
-        st.session_state.read_status = [False] * len(books)
-    # Google Sheets の行数が books の長さと一致していない場合、Falseで埋める
-    if len(st.session_state.read_status) < len(books):
-        st.session_state.read_status += [False] * (len(books) - len(st.session_state.read_status))
-    elif len(st.session_state.read_status) > len(books):
-        st.session_state.read_status = st.session_state.read_status[:len(books)]
+# Google Sheets から読了データを読み込む（常に最新データで初期化）
+values = sheet.col_values(1)
+read_status = [v.upper() == "TRUE" for v in values]
+if len(read_status) < len(books):
+    read_status += [False] * (len(books) - len(read_status))
+elif len(read_status) > len(books):
+    read_status = read_status[:len(books)]
+st.session_state.read_status = read_status
 
 updated_read_status = []
 has_changed = False
