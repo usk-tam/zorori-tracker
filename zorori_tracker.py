@@ -91,4 +91,4 @@ ax.pie(
 ax.axis("equal")
 
 graph_placeholder.pyplot(fig)
-count_placeholder.subheader(f"✅ {len(books)}冊中 {read_count}冊 読了！")
+count_placeholder.subheader(f"✅ {len(books)}冊中 {read_count}冊 読んだよ！")
