@@ -39,7 +39,7 @@ books = [
     "かいけつゾロリいただき!! なぞのどデカダイアモンド"
 ]
 
-st.set_page_config(page_title="ゾロリ読書記録", layout="centered")
+st.set_page_config(page_title="ゾロリ読書メーター", layout="centered")
 st.title("📚 かいけつゾロリ 読書メーター")
 
 # グラフ描画用のプレースホルダーを作成
@@ -86,4 +86,4 @@ ax.pie(
 ax.axis("equal")
 
 graph_placeholder.pyplot(fig)
-count_placeholder.subheader(f"✅ {len(books)}冊中 {read_count}冊 読了！")
+count_placeholder.subheader(f"✅ {len(books)}冊中 {read_count}冊 読んだよ！")
