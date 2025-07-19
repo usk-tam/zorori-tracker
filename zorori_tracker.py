@@ -42,6 +42,24 @@ books = [
 st.set_page_config(page_title="ゾロリ読書記録", layout="centered")
 st.title("📚 かいけつゾロリ 読書メーター")
 
+# 初期値の読了数集計（仮表示用）
+initial_read_count = sum(st.session_state.read_status) if "read_status" in st.session_state else 0
+initial_unread_count = len(books) - initial_read_count
+
+fig, ax = plt.subplots()
+colors = ['#87cefa', '#dcdcdc']
+ax.pie(
+    [initial_read_count, initial_unread_count],
+    labels=["Read", "Unread"],
+    colors=colors,
+    startangle=90,
+    wedgeprops=dict(width=0.4)
+)
+ax.axis("equal")
+st.pyplot(fig)
+
+st.subheader(f"✅ {len(books)}冊中 {initial_read_count}冊 読了！")
+
 # Google Sheets から読了データを読み込む
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_dict(st.secrets["gspread"], scope)
@@ -60,24 +78,6 @@ for i, title in enumerate(books):
     checked = st.checkbox(f"{i+1}巻: {title}", value=st.session_state.read_status[i], key=f"book_{i}")
     updated_read_status.append(checked)
 st.session_state.read_status = updated_read_status
-
-# 最新のチェックボックス状態で読書進捗を再計算し、グラフを更新
-read_count = sum(st.session_state.read_status)
-unread_count = len(books) - read_count
-
-fig, ax = plt.subplots()
-colors = ['#87cefa', '#dcdcdc']
-ax.pie(
-    [read_count, unread_count],
-    labels=["Read", "Unread"],
-    colors=colors,
-    startangle=90,
-    wedgeprops=dict(width=0.4)
-)
-ax.axis("equal")
-st.pyplot(fig)
-
-st.subheader(f"✅ {len(books)}冊中 {read_count}冊 読了！")
 
 # Google Sheets へ保存
 sheet.update('A1:A{}'.format(len(books)), [[str(v)] for v in st.session_state.read_status])
