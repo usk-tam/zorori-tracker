@@ -55,30 +55,29 @@ if values:
 else:
     st.session_state.read_status = [False] * len(books)
 
-# 読書進捗を集計
-read_count = sum(st.session_state.read_status)
-unread_count = len(books) - read_count
-
-# ドーナツグラフの描画（タイトルの直後に表示）
-fig, ax = plt.subplots()
-colors = ['#87cefa', '#dcdcdc']  # 青 / 灰
-ax.pie(
-    [read_count, unread_count],
-    labels=["Read", "Unread"],
-    colors=colors,
-    startangle=90,
-    wedgeprops=dict(width=0.4)  # ドーナツにする
-)
-ax.axis("equal")  # 円形にする
-st.pyplot(fig)
-
-st.subheader(f"✅ {len(books)}冊中 {read_count}冊 読了！")
-
 updated_read_status = []
 for i, title in enumerate(books):
     checked = st.checkbox(f"{i+1}巻: {title}", value=st.session_state.read_status[i], key=f"book_{i}")
     updated_read_status.append(checked)
 st.session_state.read_status = updated_read_status
+
+# 最新のチェックボックス状態で読書進捗を再計算し、グラフを更新
+read_count = sum(st.session_state.read_status)
+unread_count = len(books) - read_count
+
+fig, ax = plt.subplots()
+colors = ['#87cefa', '#dcdcdc']
+ax.pie(
+    [read_count, unread_count],
+    labels=["Read", "Unread"],
+    colors=colors,
+    startangle=90,
+    wedgeprops=dict(width=0.4)
+)
+ax.axis("equal")
+st.pyplot(fig)
+
+st.subheader(f"✅ {len(books)}冊中 {read_count}冊 読了！")
 
 # Google Sheets へ保存
 sheet.update('A1:A{}'.format(len(books)), [[str(v)] for v in st.session_state.read_status])
