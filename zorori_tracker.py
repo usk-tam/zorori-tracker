@@ -1,6 +1,6 @@
 import streamlit as st
 import matplotlib.pyplot as plt
-matplotlib.rcParams['font.family'] = 'IPAexGothic'
+matplotlib.rcParams['font.family'] = 'sans-serif'
 
 # --- ゾロリ書籍リスト ---
 books = [
